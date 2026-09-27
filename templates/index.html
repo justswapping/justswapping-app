@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JustSwapping — Private Crypto Swaps</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="icon" href="/static/images/monero-icon.jpg">
+<link rel="shortcut icon" href="/static/images/monero-icon.jpg">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <span class="site-logo">JustSwapping</span>
+    <span class="site-tagline">Private crypto swaps. No account. No KYC. Just swap.</span>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- LEFT: Swap form -->
+  <div class="card">
+    <div id="connection-status" class="status">Connecting to prices...</div>
+
+<!-- replace with +/- keys for mobiles 23-05-26 -->
+<!-- 
+    <div class="box">
+      <span class="field-label">What to swap</span>
+      <div style="display: flex; justify-content: space-between;">
+        <input type="number" id="ltc-input" placeholder="0.00">
+        <select id="from-coin">
+          <option value="litecoin">LTC — Litecoin</option>
+          <option value="bitcoin">BTC — Bitcoin</option>
+          <option value="ethereum">ETH — Ethereum</option>
+          <option value="monero">XMR — Monero</option>
+          <option value="bitcoin-cash">BCH — Bitcoin Cash</option>
+          <option value="dogecoin">DOGE — Dogecoin</option>
+          <option value="cardano">ADA — Cardano</option>
+          <option value="solana">SOL — Solana</option>
+          <option value="tron">TRX — Tron</option>
+        </select>
+      </div>
+      <div class="gbp" id="ltc-gbp">≈ £0.00 GBP / $0.00 USD</div>
+    </div>
+ -->
+ 
+     <div class="box">
+      <span class="field-label">What to swap</span>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <button class="qty-btn" onclick="adjustAmount(-0.1)">−</button>
+          <input type="number" id="ltc-input" placeholder="0.00">
+          <button class="qty-btn" onclick="adjustAmount(0.1)">+</button>
+        </div>
+        <select id="from-coin">
+          <option value="litecoin">LTC — Litecoin</option>
+          <option value="bitcoin">BTC — Bitcoin</option>
+          <option value="ethereum">ETH — Ethereum</option>
+          <option value="monero">XMR — Monero</option>
+          <option value="bitcoin-cash">BCH — Bitcoin Cash</option>
+          <option value="dogecoin">DOGE — Dogecoin</option>
+          <option value="cardano">ADA — Cardano</option>
+          <option value="solana">SOL — Solana</option>
+          <option value="tron">TRX — Tron</option>
+        </select>
+      </div>
+      <div class="gbp" id="ltc-gbp">≈ £0.00 GBP / $0.00 USD</div>
+    </div>
+ 
+
+
+    <div class="box">
+      <span class="field-label">You receive</span>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <input type="text" id="xmr-output" placeholder="---" readonly style="display:none;">
+        <select id="to-coin">
+          <option value="monero">XMR — Monero</option>
+          <option value="bitcoin">BTC — Bitcoin</option>
+          <option value="ethereum">ETH — Ethereum</option>
+          <option value="litecoin">LTC — Litecoin</option>
+          <option value="bitcoin-cash">BCH — Bitcoin Cash</option>
+          <option value="dogecoin">DOGE — Dogecoin</option>
+          <option value="cardano">ADA — Cardano</option>
+          <option value="solana">SOL — Solana</option>
+          <option value="tron">TRX — Tron</option>
+        </select>
+      </div>
+      <div class="gbp" id="xmr-gbp">≈ £0.00 GBP / $0.00 USD</div>
+    </div>
+
+    <!-- Provider quote cards -->
+    <div id="quotes-container"></div>
+
+    <!-- Receiving address -->
+    <div class="box">
+      <span class="field-label field-label--strong">Your receiving address</span>
+      <input type="text" id="receive-address" placeholder="Enter your XMR address">
+    </div>
+
+    <!-- Email (optional) -->
+    <div class="box">
+      <span class="field-label">Email (optional — for receipt)</span>
+      <input type="email" id="email-input" placeholder="Optional — get a receipt">
+    </div>
+
+    <!-- Refund address -->
+    <div class="box">
+<!--    <span class="field-label">Refund address (<span class="label-recommended">Recommended</span> — in case of failure)</span> -->
+<!--       <span class="field-label">Refund address (Recommended — if swap fails)</span> -->
+      <span class="field-label">Refund address (<strong>Recommended</strong> — if swap fails)</span>
+      <input type="text" id="refund-address" placeholder="Your LTC address for refunds">
+    </div>
+
+    <!-- Swap Button -->
+    <button id="swap-button" class="swap-btn">Swap Now</button>
+
+    <!-- Deposit Address Section -->
+    <div id="deposit-section" class="box" style="display:none; margin-top:10px;">
+      <span class="field-label"><b>Send your coins to:</b></span>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <input type="text" id="deposit-address" readonly style="width:80%;">
+        <button id="copy-btn" class="copy-btn">Copy</button>
+      </div>
+      <div id="deposit-amount" class="gbp" style="margin-top:6px;">Amount Required: ---</div>
+    </div>
+
+    <!-- Progress Tracker -->
+    <div id="progress-tracker" class="box" style="display:none; margin-top:10px;">
+      <span class="field-label"><b>Swap Progress</b></span>
+      <ul id="progress-list" style="font-size:14px; color:#555; list-style:none; padding-left:8px; margin-top:8px;">
+        <li id="p1">• Swap created</li>
+        <li id="p2">• Awaiting your deposit</li>
+        <li id="p3">• Deposit detected</li>
+        <li id="p4">• Performing swap</li>
+        <li id="p5">• Swap completed ✓</li>
+      </ul>
+      <div id="tx-id-section" style="display:none; margin-top:10px; font-size:12px; color:#555;">
+        Track on provider: <a id="tx-id-link" href="#" target="_blank" rel="noopener noreferrer"></a>
+      </div>
+      <div id="hold-message" style="display:none; margin-top:10px; font-size:13px; color:#e65100; background:#fff3e0; padding:10px; border-radius:6px;">
+        ⚠ Your swap is on hold and requires manual review by the provider. Please contact them directly using your transaction ID above.
+      </div>
+    </div>
+
+
+    <div class="timer-wrap">
+      <div id="timer-bar"></div>
+    </div>
+<!--    <p style="text-align:right; font-size:11px; color:#999;"> -->
+    <p style="text-align:right; font-size:11px; color:#999; padding-right:10px;">
+      Refreshes in <span id="secs">60</span>s
+    </p>
+  </div>
+
+  <!-- RIGHT: Info panel -->
+  <div class="info-panel">
+
+    <div class="info-section">
+      <h2 class="info-title">How it works</h2>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Choose your coins</div>
+          <div class="step-desc">Select the coin you want to send and the coin you want to receive. The rate updates automatically every 60 seconds.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Enter your receiving address</div>
+          <div class="step-desc">Paste the wallet address where you want your swapped coins delivered. Double-check this — it cannot be changed once the swap starts.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Add email and refund address (optional)</div>
+          <div class="step-desc">Get a receipt by email. We recommend a refund address in case anything goes wrong — your coins will be returned to it automatically.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>
+          <div class="step-title">Send your coins and wait</div>
+          <div class="step-desc">Send exactly the amount shown to the deposit address. Your swap completes automatically — no need to stay on the page.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-divider"></div>
+
+    <div class="info-section">
+      <h2 class="info-title">Why JustSwapping?</h2>
+      <div class="trust-list">
+        <div class="trust-item">
+          <div class="trust-tick">&#10003;</div>
+          <span>No account or sign-up required</span>
+        </div>
+        <div class="trust-item">
+          <div class="trust-tick">&#10003;</div>
+          <span>No KYC — your identity stays private</span>
+        </div>
+        <div class="trust-item">
+          <div class="trust-tick">&#10003;</div>
+          <span>No limits on swap amounts</span>
+        </div>
+        <div class="trust-item">
+          <div class="trust-tick">&#10003;</div>
+          <span>Best rate automatically selected</span>
+        </div>
+        <div class="trust-item">
+          <div class="trust-tick">&#10003;</div>
+          <span>Powered by established providers</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-divider"></div>
+
+    <div class="info-section">
+      <h2 class="info-title">Frequently asked questions</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">How long does a swap take?</div>
+        <div class="faq-a">It depends on which provider is selected. ChangeNOW typically completes within 10–15 minutes. Godex tends to take longer, typically 30–45 minutes from initiation depending on network confirmation times.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Do I need to create an account?</div>
+        <div class="faq-a">No. There is no account, no sign-up, and no personal information required. Just enter your receiving address and swap.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What happens if I send the wrong amount?</div>
+        <div class="faq-a">If the amount differs significantly from what was quoted, the swap may fail. If you provided a refund address your coins will be returned automatically — this is why we always recommend adding one.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What happens if the swap fails?</div>
+        <div class="faq-a">If a swap fails your coins are returned to your refund address. If no refund address was provided, contact us with your swap ID and we will assist you.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is there a minimum or maximum swap amount?</div>
+        <div class="faq-a">There is a small minimum set by the exchange provider — this is shown on the form. There is no upper limit.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Who processes the swap?</div>
+        <div class="faq-a">Swaps are routed through ChangeNOW or Godex — established non-custodial exchange providers. We automatically select the best available rate for you.</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <a href="/terms">Terms of Service</a>
+  &nbsp;·&nbsp;
+  <a href="/privacy">Privacy Policy</a>
+</footer>
+
+<!-- <script src="{{ url_for('static', filename='js/app.js') }}"></script> -->
+<script src="{{ url_for('static', filename='js/app.js', v='2') }}"></script>
+</body>
+</html>

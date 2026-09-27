@@ -1,0 +1,127 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# =========================
+# Virtual environments
+# =========================
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+# Environment & secrets
+# =========================
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+
+# =========================
+# Runtime / engine artifacts
+# =========================
+logs/
+*.log
+engine_runtime/
+engine_ticks/
+engine_state_snapshot.json
+
+# =========================
+# Database artifacts
+# =========================
+*.sqlite3
+*.db
+db_dump/
+db_backups/
+
+# =========================
+# Local overrides
+# =========================
+settings.local.py
+config.local.yaml
+config.local.json
+
+# =========================
+# OS / Editor junk
+# =========================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# =========================
+# Test outputs
+# =========================
+.coverage
+htmlcov/
+pytest_cache/
+.tox/
+
+# =========================
+# Temp / scratch
+# =========================
+tmp/
+scratch/
+# --- Local / scratch ---
+*.bin
+engine_tick.txt
+continuation_notes_*.md
+test_*_api.py
+
+# =========================
+# Backup / old versions
+# =========================
+*_old*.py
+*_old*.js
+*_old*.css
+*_old*.html
+*_old*.txt
+app_old_*.py
+engine_helpers/*_old*.py
+providers/*_old*.py
+
+# =========================
+# Test scripts
+# =========================
+test_*.py
+
+# =========================
+# Local working folders
+# =========================
+updates/
+
+# =========================
+# Sensitive files
+# =========================
+docs/twilio_2FA_recovery_code.txt
+docs/Twillio.rtf
+*.pdf
+
+# =========================
+# DB WAL files
+# =========================
+*.db-shm
+*.db-wal
+out
+.env
+
+# =========================
+# Doc files files
+# =========================
+docs/CryptoSwap-AppSpecific
+docs/
+
